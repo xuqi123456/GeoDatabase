@@ -12,7 +12,7 @@
         <module>TileStore</module>
         <module>VideoStore</module>
         <module>VectorStore</module>
-        <module>GeoServer</module>
+        <module>GeoDataServer</module>
     </modules>
 
     <properties>
