@@ -28,7 +28,7 @@ public class TileController {
     @Autowired
     private TileService tileService;
 
-    @RequestMapping(value = "/{tiles-name}/{zoom}/{x}/{y}.png", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/{tiles-name}/{zoom}/{x}/{y}.jpg", method = RequestMethod.GET, produces = "application/json")
     public void getTile(@PathVariable("tiles-name") String tilesName, @PathVariable("zoom") Integer zoom,
                         @PathVariable("x") Integer x, @PathVariable("y") Integer y,
                         HttpServletResponse response) throws MBTilesReadException,
