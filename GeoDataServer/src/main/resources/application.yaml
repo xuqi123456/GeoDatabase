@@ -39,6 +39,11 @@ minio:
   accessKey: rssample
   secretKey: ypfamily608
 
+bos:
+  endpoint: https://s3.bj.bcebos.com
+  accessKey: ALTAKetCGvRVdSsIa1C9CR81Cm
+  secretKey: 45624b0ae0c94c66877f75c6219b25f7
+
 server:
   port: 19087
   tomcat:
