@@ -24,14 +24,7 @@ public class TileMetadataServiceImpl implements TileMetadataService {
            // 查询瓦片数据
            TileMetadata tileMetadata = tileMetadataRepository.findBySql(name);
            if(tileMetadata != null){
-               // 将元数据存入map
-               Map<String, Object> tileMetadataMap = new HashMap<>();
-               tileMetadataMap.put("id", tileMetadata.getId());
-               tileMetadataMap.put("name", tileMetadata.getName());
-               tileMetadataMap.put("path", tileMetadata.getPath());
-               tileMetadataMap.put("bbox", tileMetadata.getBbox());
-               tileMetadataMap.put("create_time", tileMetadata.getCreateTime());
-               return httpResponseUtil.ok("获取瓦片元数据", tileMetadataMap);
+               return httpResponseUtil.ok("获取瓦片元数据", tileMetadata);
            }else {
                return httpResponseUtil.ok("瓦片数据不存在");
            }
