@@ -15,18 +15,18 @@ public class TileMetadataController {
 
     @RequestMapping(value = "/{tile-name}", method = RequestMethod.GET, produces = "application/json")
     public Response getTile(@PathVariable("tile-name") String name) {
-        return tileMetadataService.getTile(name);
+        return tileMetadataService.getTileMetadata(name);
     }
 
     @RequestMapping(value = "/{tile-name}", method = RequestMethod.POST, produces = "application/json")
     public Response addTile(@PathVariable("tile-name") String name,
                             @RequestBody TileMetadata tileMetadata) {
-        return tileMetadataService.addTile(name, tileMetadata);
+        return tileMetadataService.addTileMetadata(name, tileMetadata);
     }
 
     @RequestMapping(value = "/{tile-name}", method = RequestMethod.PUT, produces = "application/json")
     public Response updateTile(@PathVariable("tile-name") String name,
                                @RequestBody TileMetadata tileMetadata) {
-        return tileMetadataService.updateTile(name, tileMetadata);
+        return tileMetadataService.updateTileMetadata(name, tileMetadata);
     }
 }
