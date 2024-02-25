@@ -1,10 +1,10 @@
 package cn.edu.whu.gds.service.impl;
 
-import cn.edu.whu.gds.bean.entity.TileMetadata;
+import cn.edu.whu.gds.bean.entity.TiffMetadata;
 import cn.edu.whu.gds.bean.vo.Response;
 import cn.edu.whu.gds.mapper.TileMapper;
-import cn.edu.whu.gds.service.TileService;
 import cn.edu.whu.gds.mapper.TiffRepository;
+import cn.edu.whu.gds.service.TiffMetadataService;
 import cn.edu.whu.gds.util.BosUtil;
 import cn.edu.whu.gds.util.Bucket;
 import cn.edu.whu.gds.util.HttpResponseUtil;
@@ -21,13 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 @Slf4j
 @Service
-public class TileServiceImpl implements TileService {
+public class TiffMetadataServiceImpl implements TiffMetadataService {
     @Autowired
     private TileMapper tileMapper;
-//    @Autowired
+    //    @Autowired
 //    private MinioUtil storage;
     @Autowired
     private BosUtil storage;
@@ -37,20 +38,18 @@ public class TileServiceImpl implements TileService {
     private TiffRepository tiffRepository;
 
     @Override
-    public void getTile(String tilesName, Integer zoom, Integer x, Integer y,
-                        HttpServletResponse response) throws MBTilesReadException,
-            IOException, InvalidBucketNameException, InsufficientDataException,
-            ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException,
-            XmlParserException, InvalidResponseException, InternalException {
-        String objectKey = tileMapper.getObjectKey(tilesName);
-        log.info("objectKey: " + objectKey);
-
-        MBTilesReader reader = new MBTilesReader(storage.getFile(Bucket.TILES, objectKey));
-        InputStream data = reader.getTile(zoom, x, y).getData();
-
-        IOUtils.copy(data, response.getOutputStream());
-        log.info("get data");
-        data.close();
-        reader.close();
+    public Response getTiffPath(String wkt){
+        try {
+            // 查询tiff路径
+            List<String> tiffPath= tiffRepository.getPathByWkt(wkt);
+            if( wkt!= null){
+                return httpResponseUtil.ok("获取tiff路径", tiffPath);
+            }else {
+                return httpResponseUtil.ok("tiff路径不存在");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return httpResponseUtil.badRequest("获取tiff路径时发生异常");
+        }
     }
 }

@@ -1,4 +1,4 @@
-package cn.edu.whu.gds.service;
+package cn.edu.whu.gds.mapper;
 
 import cn.edu.whu.gds.bean.entity.TileMetadata;
 import org.springframework.data.jpa.repository.Query;
