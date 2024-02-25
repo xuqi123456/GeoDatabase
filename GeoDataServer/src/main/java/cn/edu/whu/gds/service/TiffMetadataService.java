@@ -12,6 +12,8 @@ import java.security.NoSuchAlgorithmException;
 
 @Service
 public interface TiffMetadataService {
+    Response getTiffCatalog();
+
     // 获取tiff影像路径
     Response getTiffPath(String wkt);
 }

@@ -21,6 +21,8 @@ public class TiffMetadata {
     private String path;
     private String bbox;
     private Timestamp createTime;
+    private String province;
+    private String city;
 
     public String getObjectKey() {
         return path + name;

@@ -13,6 +13,11 @@ public class TiffMetadataController {
     @Autowired
     private TiffMetadataService tiffMetadataService;
 
+    @RequestMapping(value = "/catalog", method = RequestMethod.GET, produces = "application/json")
+    public Response getTiffCatalog() {
+        return tiffMetadataService.getTiffCatalog();
+    }
+
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public Response getTiffPath(@RequestParam("wkt") String wkt) {
         return tiffMetadataService.getTiffPath(wkt);
