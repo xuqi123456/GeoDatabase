@@ -3,7 +3,6 @@ package cn.edu.whu.gds.service.impl;
 import cn.edu.whu.gds.bean.entity.InferenceTask;
 import cn.edu.whu.gds.bean.vo.Response;
 import cn.edu.whu.gds.mapper.InferenceTaskMapper;
-import cn.edu.whu.gds.service.InferenceResultService;
 import cn.edu.whu.gds.service.InferenceTaskService;
 import cn.edu.whu.gds.util.HttpResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +29,11 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
     }
 
     @Override
-    public Response updateInferenceTask() {
-        return null;
+    public Response updateInferenceTask(Integer id, Short state) {
+        if (!inferenceTaskMapper.updateInferenceTask(id, state)){
+            return httpResponseUtil.failure("推理结果状态更新失败");
+        }
+        return httpResponseUtil.ok("已更新推理结果状态！");
     }
 
     @Override

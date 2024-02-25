@@ -17,4 +17,5 @@ public class InferenceTask {
     private Short state;
     private Timestamp startTime;
     private Timestamp endTime;
+    private String type;
 }

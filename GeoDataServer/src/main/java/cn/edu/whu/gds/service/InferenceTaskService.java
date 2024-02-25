@@ -11,7 +11,7 @@ public interface InferenceTaskService {
 
     Response addInferenceTask(InferenceTask inferenceTask);
 
-    Response updateInferenceTask();
+    Response updateInferenceTask(Integer id, Short state);
 
     Response deleteInferenceTask();
 }
