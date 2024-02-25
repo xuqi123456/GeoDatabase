@@ -49,7 +49,7 @@ public class TiffMetadataServiceImpl implements TiffMetadataService {
             }
         }catch (Exception e){
             e.printStackTrace();
-            return httpResponseUtil.badRequest("获取tiff路径时发生异常");
+            return httpResponseUtil.failure("获取tiff路径时发生异常");
         }
     }
 }
