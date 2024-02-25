@@ -2,7 +2,7 @@ package cn.edu.whu.gds.service.impl;
 
 import cn.edu.whu.gds.bean.entity.TileMetadata;
 import cn.edu.whu.gds.bean.vo.Response;
-import cn.edu.whu.gds.service.TileMetadataRepository;
+import cn.edu.whu.gds.mapper.TileMetadataRepository;
 import cn.edu.whu.gds.service.TileMetadataService;
 import cn.edu.whu.gds.util.HttpResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;

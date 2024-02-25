@@ -1,16 +1,18 @@
 package cn.edu.whu.gds.service.impl;
 
+import cn.edu.whu.gds.bean.entity.TileMetadata;
+import cn.edu.whu.gds.bean.vo.Response;
 import cn.edu.whu.gds.mapper.TileMapper;
 import cn.edu.whu.gds.service.TileService;
+import cn.edu.whu.gds.mapper.TiffRepository;
 import cn.edu.whu.gds.util.BosUtil;
 import cn.edu.whu.gds.util.Bucket;
-import cn.edu.whu.gds.util.MinioUtil;
+import cn.edu.whu.gds.util.HttpResponseUtil;
 import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.imintel.mbtiles4j.MBTilesReadException;
 import org.imintel.mbtiles4j.MBTilesReader;
-import org.imintel.mbtiles4j.model.MetadataEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,10 @@ public class TileServiceImpl implements TileService {
 //    private MinioUtil storage;
     @Autowired
     private BosUtil storage;
+    @Autowired
+    private HttpResponseUtil httpResponseUtil;
+    @Autowired
+    private TiffRepository tiffRepository;
 
     @Override
     public void getTile(String tilesName, Integer zoom, Integer x, Integer y,
