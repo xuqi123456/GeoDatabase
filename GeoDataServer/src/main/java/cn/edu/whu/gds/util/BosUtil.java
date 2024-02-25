@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 
 @Component
 public class BosUtil {
-    private static final String tmpDir = "/home/oge/oge-server/extended-applications/tilesTest/tmp/";
+    private static final String TEMP_DIR = "/home/oge/oge-server/extended-applications/tilesTest/tmp/";
     @Autowired
     private BosClient bosClient;
     @Autowired
@@ -34,17 +34,17 @@ public class BosUtil {
     }
 
     public File getFile(Bucket bucket, String objectName) {
-        File file = new File(tmpDir + objectName);
+        File file = new File(TEMP_DIR + objectName);
         if (file.exists()) {
             return file;
         }
 
         InputStream inputStream = get(bucket, objectName);
-        File dir = new File(tmpDir);
+        File dir = new File(TEMP_DIR);
         if (!dir.exists() || dir.isFile()) {
             dir.mkdirs();
         }
-        file = new File(tmpDir + objectName);
+        file = new File(TEMP_DIR + objectName);
         try {
             FileUtils.copyInputStreamToFile(inputStream, file);
         } catch (IOException e) {
