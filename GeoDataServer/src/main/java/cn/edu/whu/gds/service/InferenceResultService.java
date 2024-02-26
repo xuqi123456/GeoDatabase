@@ -10,4 +10,6 @@ public interface InferenceResultService {
     Response getInferenceResult(String name);
 
     Response addInferenceResult(InferenceResult inferenceResult);
+
+    Response updateInferenceResult();
 }

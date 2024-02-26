@@ -27,4 +27,9 @@ public class InferenceResultServiceImpl implements InferenceResultService {
         }
         return httpResponseUtil.ok("已添加推理结果");
     }
+
+    @Override
+    public Response updateInferenceResult() {
+        return null;
+    }
 }

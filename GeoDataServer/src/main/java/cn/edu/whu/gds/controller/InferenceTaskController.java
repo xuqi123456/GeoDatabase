@@ -19,4 +19,10 @@ public class InferenceTaskController {
     public Response addInferenceResult(@RequestBody InferenceTask inferenceTask) {
         return inferenceTaskService.addInferenceTask(inferenceTask);
     }
+
+    @RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json")
+    public Response updateInferenceResult(@RequestParam("id") Integer id,
+                                          @RequestParam("state") Short state) {
+        return inferenceTaskService.updateInferenceTask(id, state);
+    }
 }
