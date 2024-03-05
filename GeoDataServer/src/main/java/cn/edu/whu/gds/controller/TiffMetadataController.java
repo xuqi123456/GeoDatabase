@@ -18,6 +18,11 @@ public class TiffMetadataController {
         return tiffMetadataService.getTiffCatalog();
     }
 
+    @RequestMapping(value = "/catalog/task", method = RequestMethod.GET, produces = "application/json")
+    public Response getTiffTaskCatalog() {
+        return tiffMetadataService.getTiffTaskCatalog();
+    }
+
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public Response getTiffPath(@RequestParam("wkt") String wkt) {
         return tiffMetadataService.getTiffPath(wkt);

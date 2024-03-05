@@ -30,9 +30,9 @@ mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
 
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 minio:
   endpoint: http://125.220.153.22:9006

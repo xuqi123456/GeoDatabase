@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Data
@@ -15,6 +13,6 @@ public class InferenceResult {
     private Integer id;
     private Integer taskId;
     private String name;
-    private String geom;
+    private String path;
     private Timestamp createTime;
 }

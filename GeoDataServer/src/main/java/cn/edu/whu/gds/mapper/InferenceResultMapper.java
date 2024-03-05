@@ -3,15 +3,22 @@ package cn.edu.whu.gds.mapper;
 import cn.edu.whu.gds.bean.entity.InferenceResult;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface InferenceResultMapper {
-    @Select("select id, name, task_id, ST_AsGeoJson(geom) geom, create_time from gd_inference_result where name = #{name}")
-    InferenceResult getInferenceResult(@Param("name") String name);
+    @Select("select max(id) from " + Table.INFERENCE_RESULT)
+    Integer getMaxId();
 
-    @Insert("insert into gd_inference_result (name, task_id, geom, create_time) values (#{name}, #{taskId}, ST_GeomFromGeoJSON(#{geom}), now())")
+    @Select("select id, name from " + Table.INFERENCE_RESULT + " where task_id = #{taskId}")
+    List<InferenceResult> getInferenceResultByTaskId(@Param("taskId") Integer id);
+
+    @Select("select id, name, task_id, path, create_time from " + Table.INFERENCE_RESULT + " where id = #{id}")
+    InferenceResult getInferenceResult(@Param("id") Integer id);
+
+    @Insert("insert into " + Table.INFERENCE_RESULT + " (name, task_id, path, create_time) values (#{name}, #{taskId}, #{taskId}, now())")
     Boolean addInferenceResult(InferenceResult inferenceResult);
 
-    @Update("update gd_inference_task set state = #{state} where id = #{id}")
     Boolean updateInferenceResult();
 
     Boolean deleteInferenceResult();
