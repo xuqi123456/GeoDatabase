@@ -11,6 +11,7 @@ import cn.edu.whu.gds.util.MinioUtil;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +39,8 @@ public class InferenceResultServiceImpl implements InferenceResultService {
     }
 
     @Override
+    @Transactional
     public Response addInferenceResult(InferenceResult inferenceResult) {
-//        System.out.println(BUCKET.getBucketName());
 //        try {
 //            minioUtil.put(geoJson, BUCKET,
 //                    "result/" + inferenceResult.getPath() + inferenceResult.getName() + ".geojson");

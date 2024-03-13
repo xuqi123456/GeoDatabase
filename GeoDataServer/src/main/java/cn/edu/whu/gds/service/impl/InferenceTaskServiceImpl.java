@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -30,6 +31,7 @@ import java.util.*;
 
 @Slf4j
 @Service
+@Transactional
 public class InferenceTaskServiceImpl implements InferenceTaskService {
     @Autowired
     private InferenceTaskMapper inferenceTaskMapper;
@@ -44,6 +46,7 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
 
     @Override
     public Response getInferenceTaskCatalog() {
+        // TODO: 两表JOIN一次查完
         List<InferenceTask> inferenceTaskList = inferenceTaskMapper.getAllInferenceTask();
         Map<String, InferenceTaskCatalog> inferenceTaskMap = new HashMap<>();
         List<InferenceTaskCatalog> ans = new ArrayList<>();

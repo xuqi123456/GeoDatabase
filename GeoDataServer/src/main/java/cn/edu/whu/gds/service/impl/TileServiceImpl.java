@@ -1,13 +1,11 @@
 package cn.edu.whu.gds.service.impl;
 
-import cn.edu.whu.gds.bean.entity.TileMetadata;
-import cn.edu.whu.gds.bean.vo.Response;
 import cn.edu.whu.gds.mapper.TileMapper;
 import cn.edu.whu.gds.service.TileService;
 import cn.edu.whu.gds.mapper.TiffRepository;
-import cn.edu.whu.gds.util.BosUtil;
 import cn.edu.whu.gds.util.Bucket;
 import cn.edu.whu.gds.util.HttpResponseUtil;
+import cn.edu.whu.gds.util.MinioUtil;
 import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -27,10 +25,8 @@ import java.security.NoSuchAlgorithmException;
 public class TileServiceImpl implements TileService {
     @Autowired
     private TileMapper tileMapper;
-//    @Autowired
-//    private MinioUtil storage;
     @Autowired
-    private BosUtil storage;
+    private MinioUtil storage;
     @Autowired
     private HttpResponseUtil httpResponseUtil;
     @Autowired
