@@ -27,6 +27,7 @@ public interface InferenceTaskMapper {
 
     @Update("update " + Table.INFERENCE_TASK + " set end_time = now() where id = #{id}")
     Boolean setInferenceTaskEndTime(@Param("id") Integer id);
-
     Boolean deleteInferenceTask();
+    @Select("select name from " + Table.INFERENCE_TASK+ " where id = #{taskId}")
+    String getTaskNameById(@Param("taskId") Integer id);
 }

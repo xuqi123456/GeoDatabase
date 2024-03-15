@@ -8,13 +8,14 @@ import cn.edu.whu.gds.bean.vo.Response;
 import cn.edu.whu.gds.bean.vo.Road;
 import cn.edu.whu.gds.mapper.InferenceResultMapper;
 import cn.edu.whu.gds.mapper.InferenceTaskMapper;
+import cn.edu.whu.gds.mapper.TiffInferenceTaskMapper;
 import cn.edu.whu.gds.mapper.TiffRepository;
-import cn.edu.whu.gds.service.InferenceResultService;
 import cn.edu.whu.gds.service.InferenceTaskService;
 import cn.edu.whu.gds.util.HttpResponseUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+//import com.sun.org.apache.xpath.internal.operations.String;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.description.type.TypeList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,6 +38,8 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
     @Autowired
     private InferenceResultMapper inferenceResultMapper;
     @Autowired
+    private TiffInferenceTaskMapper tiffInferenceTaskMapper;
+    @Autowired
     private TiffRepository tiffRepository;
     @Autowired
     private HttpResponseUtil httpResponseUtil;
@@ -47,49 +49,81 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
     @Override
     public Response getInferenceTaskCatalog() {
         // TODO: 两表JOIN一次查完
+        // 获取所有推理任务
         List<InferenceTask> inferenceTaskList = inferenceTaskMapper.getAllInferenceTask();
-        Map<String, InferenceTaskCatalog> inferenceTaskMap = new HashMap<>();
+//        Map<String, InferenceTaskCatalog> inferenceTaskMap = new HashMap<>();
+        // 创建任务目录
         List<InferenceTaskCatalog> ans = new ArrayList<>();
+        Map<Integer, Map<String, Map<Integer, InferenceTaskCatalog>>> imageTaskMap = new HashMap<>();
 
         Integer typeId = 1;
+        List<String> typeList = new ArrayList<>();
+        // 将任务放到对应的影像之下
         for (InferenceTask inferenceTask : inferenceTaskList) {
-            Integer id = inferenceTask.getId();
-            String name = inferenceTask.getName();
+            Integer taskId = inferenceTask.getId();
+            List<Integer> imageIdList = tiffInferenceTaskMapper.getImageIdByTaskId(taskId);
             String type = inferenceTask.getType();
-            List<InferenceResult> inferenceResultList = inferenceResultMapper.getInferenceResultByTaskId(id);
-            if (!inferenceTaskMap.containsKey(type)) {
-                List<InferenceTaskCatalog> children = new ArrayList<>();
-                if (inferenceResultList.size() > 0) {
-                    List<InferenceTaskCatalog> results = new ArrayList<>();
-                    for (InferenceResult inferenceResult : inferenceResultList) {
-                        results.add(new InferenceTaskCatalog(
-                                inferenceResult.getId(), inferenceResult.getName(), true));
+            String taskName = inferenceTaskMapper.getTaskNameById(taskId);
+            typeList.add(type);
+            if (imageIdList != null) {
+                for (Integer imageId : imageIdList) {
+                    if (!imageTaskMap.containsKey(imageId)) {
+                        imageTaskMap.put(imageId, new HashMap<>());
                     }
-                    children.add(new InferenceTaskCatalog(id, name, inferenceTask.getState(), results));
-                } else {
-                    children.add(new InferenceTaskCatalog(id, name));
-                }
-                InferenceTaskCatalog catalog = new InferenceTaskCatalog(typeId, type, children);
-                ans.add(catalog);
-                inferenceTaskMap.put(type, catalog);
-                ++typeId;
-            } else {
-                if (inferenceResultList.size() > 0) {
-                    List<InferenceTaskCatalog> results = new ArrayList<>();
-                    for (InferenceResult inferenceResult : inferenceResultList) {
-                        results.add(new InferenceTaskCatalog(
-                                inferenceResult.getId(), inferenceResult.getName(), true));
+                    if (!imageTaskMap.get(imageId).containsKey(type)) {
+                        imageTaskMap.get(imageId).put(type, new HashMap<>());
                     }
-                    inferenceTaskMap.get(type).getChildren().add(
-                            new InferenceTaskCatalog(id, name, inferenceTask.getState(), results));
-                } else {
-                    inferenceTaskMap.get(type).getChildren().add(
-                            new InferenceTaskCatalog(id, name, inferenceTask.getState()));
+                    if (!imageTaskMap.get(imageId).get(type).containsKey(taskId)) {
+                        imageTaskMap.get(imageId).get(type).put(taskId, new InferenceTaskCatalog(taskId, taskName, inferenceTask.getState()));
+                    }
                 }
             }
         }
-
+        // 所有的任务类型
+        Set<String> typeSet = new HashSet<>(typeList);
+        // 影像层
+        for (Map.Entry<Integer, Map<String, Map<Integer, InferenceTaskCatalog>>> firstMap : imageTaskMap.entrySet()) {
+            String imageName = tiffInferenceTaskMapper.getImageNameById(firstMap.getKey());
+            List<InferenceTaskCatalog> catalog = new ArrayList<>();
+            List<InferenceTaskCatalog> children = new ArrayList<>();
+            for (String type : typeSet) {
+                // 任务类型层
+                for (Map.Entry<String, Map<Integer, InferenceTaskCatalog>> secondMap : firstMap.getValue().entrySet()) {
+                    // 任务类型
+                    String taskType = secondMap.getKey();
+                    if (taskType.equals(type)) {
+                        // 任务层
+                        for (Map.Entry<Integer, InferenceTaskCatalog> thirdMap : secondMap.getValue().entrySet()) {
+                            Integer taskId = thirdMap.getKey();
+                            InferenceTaskCatalog taskCatalog = thirdMap.getValue();
+                            String name = taskCatalog.getLabel();
+                            List<InferenceResult> inferenceResultList = inferenceResultMapper.getInferenceResultByTaskId(taskId);
+                            if (!inferenceResultList.isEmpty()) {
+                                List<InferenceTaskCatalog> results = new ArrayList<>();
+                                // 任务结果层
+                                for (InferenceResult inferenceResult : inferenceResultList) {
+                                    results.add(new InferenceTaskCatalog(
+                                            inferenceResult.getId(), inferenceResult.getName(), true));
+                                }
+                                children.add(new InferenceTaskCatalog(taskId, name, taskCatalog.getState(), results));
+                            }
+                            else {
+                                children.add(new InferenceTaskCatalog(taskId, name, taskCatalog.getState()));
+                            }
+                        }
+                    }
+                }
+                // 同一个类型的任务放在一起
+                catalog.add(new InferenceTaskCatalog(typeId, type, children));
+                children = new ArrayList<>();
+                ++typeId;
+            }
+            // 使用同一张影像的任务放在一起
+            ans.add(new InferenceTaskCatalog(firstMap.getKey(), imageName, catalog));
+            catalog = new ArrayList<>();
+        }
         return httpResponseUtil.ok("获取所有推理任务", ans);
+
     }
 
     @Override
