@@ -19,4 +19,7 @@ public interface TiffInferenceTaskMapper {
 
     @Select("select name from " + Table.TIFF+ " where id = #{tiffId}")
     String getImageNameById(@Param("tiffId") Integer id);
+
+    @Select("select ST_Extent(bbox) As bbox from " + Table.TIFF+ " where id = #{tiffId}")
+    String getImageBboxById(@Param("tiffId") Integer id);
 }
