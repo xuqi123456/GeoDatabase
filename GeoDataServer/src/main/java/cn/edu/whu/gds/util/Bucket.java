@@ -1,7 +1,7 @@
 package cn.edu.whu.gds.util;
 
 public enum Bucket {
-    TILES("oge-user");
+    TILES("geodata");
 
     private final String bucketName;
 

@@ -18,4 +18,6 @@ public interface TiffMetadataService {
 
     // 获取tiff影像路径
     Response getTiffPath(String wkt);
+
+    Response getTiffPathByGeoJson(String geoJson);
 }
