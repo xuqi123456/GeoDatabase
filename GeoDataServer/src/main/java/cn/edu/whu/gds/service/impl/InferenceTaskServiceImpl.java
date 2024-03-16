@@ -52,7 +52,6 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
         // TODO: 两表JOIN一次查完
         // 获取所有推理任务
         List<InferenceTask> inferenceTaskList = inferenceTaskMapper.getAllInferenceTask();
-//        Map<String, InferenceTaskCatalog> inferenceTaskMap = new HashMap<>();
         // 创建任务目录
         List<InferenceTaskCatalog> ans = new ArrayList<>();
         Map<Integer, Map<String, Map<Integer, InferenceTaskCatalog>>> imageTaskMap = new HashMap<>();
@@ -84,6 +83,17 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
         // 影像层
         for (Map.Entry<Integer, Map<String, Map<Integer, InferenceTaskCatalog>>> firstMap : imageTaskMap.entrySet()) {
             String imageName = tiffInferenceTaskMapper.getImageNameById(firstMap.getKey());
+            String bbox = tiffInferenceTaskMapper.getImageBboxById(firstMap.getKey());
+            bbox = bbox.substring(bbox.indexOf('(') + 1, bbox.indexOf(')'));
+            String[] extentList = bbox.split(",");
+            List<Double> extent = new ArrayList<>(extentList.length);
+            for (String s : extentList) {
+                String[] tmp = s.split(" ");
+                extent.add(Double.parseDouble(tmp[0]));
+                extent.add(Double.parseDouble(tmp[1]));
+            }
+
+
             String[] imageNameList = imageName.split(",");
             StringBuilder sb = new StringBuilder();
             List<InferenceTaskCatalog> catalog = new ArrayList<>();
@@ -120,10 +130,6 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
                 children = new ArrayList<>();
                 ++typeId;
             }
-            // 使用同一张影像的任务放在一起
-//            if (imageNameList.length >= 10) {
-//                ans.add(new InferenceTaskCatalog(firstMap.getKey(), imageNameList[0, 9],catalog));
-//            }else ans.add(new InferenceTaskCatalog(firstMap.getKey(), imageName,catalog));
             for (int i = 0; i < Math.min(imageNameList.length, 10); i++) {
                 sb.append(imageNameList[i]);
                 if (i < 9 && imageNameList.length > i + 1) {
@@ -131,7 +137,8 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
                     sb.append(",");
                 }
             }
-            ans.add(new InferenceTaskCatalog(firstMap.getKey(), String.valueOf(sb),catalog));
+            String path = "myspcoe:" + sb;
+            ans.add(new InferenceTaskCatalog(firstMap.getKey(), String.valueOf(sb), extent, path, catalog));
         }
         return httpResponseUtil.ok("获取所有推理任务", ans);
 

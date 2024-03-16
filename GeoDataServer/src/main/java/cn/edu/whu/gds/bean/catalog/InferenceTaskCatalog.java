@@ -16,6 +16,8 @@ public class InferenceTaskCatalog {
     private String label;
     private Short state;
     private Boolean isResult;
+    private List<Double> extent;
+    private String path;
     private List<InferenceTaskCatalog> children;
 
     public InferenceTaskCatalog(Integer id, String label) {
@@ -33,6 +35,14 @@ public class InferenceTaskCatalog {
         this.id = id;
         this.label = label;
         this.state = state;
+    }
+
+    public InferenceTaskCatalog(Integer id, String label, List<Double> extent, String path, List<InferenceTaskCatalog> children) {
+        this.id = id;
+        this.label = label;
+        this.extent = extent;
+        this.path = path;
+        this.children = children;
     }
 
     public InferenceTaskCatalog(Integer id, String label, List<InferenceTaskCatalog> children) {
