@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 //import com.sun.org.apache.xpath.internal.operations.String;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeList;
+import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,6 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
         // 创建任务目录
         List<InferenceTaskCatalog> ans = new ArrayList<>();
         Map<Integer, Map<String, Map<Integer, InferenceTaskCatalog>>> imageTaskMap = new HashMap<>();
-
         Integer typeId = 1;
         List<String> typeList = new ArrayList<>();
         // 将任务放到对应的影像之下
@@ -84,6 +84,8 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
         // 影像层
         for (Map.Entry<Integer, Map<String, Map<Integer, InferenceTaskCatalog>>> firstMap : imageTaskMap.entrySet()) {
             String imageName = tiffInferenceTaskMapper.getImageNameById(firstMap.getKey());
+            String[] imageNameList = imageName.split(",");
+            StringBuilder sb = new StringBuilder();
             List<InferenceTaskCatalog> catalog = new ArrayList<>();
             List<InferenceTaskCatalog> children = new ArrayList<>();
             for (String type : typeSet) {
@@ -119,8 +121,17 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
                 ++typeId;
             }
             // 使用同一张影像的任务放在一起
-            ans.add(new InferenceTaskCatalog(firstMap.getKey(), imageName, catalog));
-            catalog = new ArrayList<>();
+//            if (imageNameList.length >= 10) {
+//                ans.add(new InferenceTaskCatalog(firstMap.getKey(), imageNameList[0, 9],catalog));
+//            }else ans.add(new InferenceTaskCatalog(firstMap.getKey(), imageName,catalog));
+            for (int i = 0; i < Math.min(imageNameList.length, 10); i++) {
+                sb.append(imageNameList[i]);
+                if (i < 9 && imageNameList.length > i + 1) {
+                    // 在每个元素后面添加逗号，除了最后一个元素
+                    sb.append(",");
+                }
+            }
+            ans.add(new InferenceTaskCatalog(firstMap.getKey(), String.valueOf(sb),catalog));
         }
         return httpResponseUtil.ok("获取所有推理任务", ans);
 
