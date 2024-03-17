@@ -56,6 +56,7 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
         List<InferenceTaskCatalog> ans = new ArrayList<>();
         Map<Integer, Map<String, Map<Integer, InferenceTaskCatalog>>> imageTaskMap = new HashMap<>();
         Integer typeId = 1;
+        Integer imageCount = 1;
         List<String> typeList = new ArrayList<>();
         // 将任务放到对应的影像之下
         for (InferenceTask inferenceTask : inferenceTaskList) {
@@ -82,63 +83,65 @@ public class InferenceTaskServiceImpl implements InferenceTaskService {
         Set<String> typeSet = new HashSet<>(typeList);
         // 影像层
         for (Map.Entry<Integer, Map<String, Map<Integer, InferenceTaskCatalog>>> firstMap : imageTaskMap.entrySet()) {
-            String imageName = tiffInferenceTaskMapper.getImageNameById(firstMap.getKey());
-            String bbox = tiffInferenceTaskMapper.getImageBboxById(firstMap.getKey());
-            bbox = bbox.substring(bbox.indexOf('(') + 1, bbox.indexOf(')'));
-            String[] extentList = bbox.split(",");
-            List<Double> extent = new ArrayList<>(extentList.length);
-            for (String s : extentList) {
-                String[] tmp = s.split(" ");
-                extent.add(Double.parseDouble(tmp[0]));
-                extent.add(Double.parseDouble(tmp[1]));
-            }
+            if (imageCount <= 10) {
+                String imageName = tiffInferenceTaskMapper.getImageNameById(firstMap.getKey());
+                String bbox = tiffInferenceTaskMapper.getImageBboxById(firstMap.getKey());
+                bbox = bbox.substring(bbox.indexOf('(') + 1, bbox.indexOf(')'));
+                String[] extentList = bbox.split(",");
+                List<Double> extent = new ArrayList<>(extentList.length);
+                for (String s : extentList) {
+                    String[] tmp = s.split(" ");
+                    extent.add(Double.parseDouble(tmp[0]));
+                    extent.add(Double.parseDouble(tmp[1]));
+                }
 
 
-            String[] imageNameList = imageName.split(",");
-            StringBuilder sb = new StringBuilder();
-            List<InferenceTaskCatalog> catalog = new ArrayList<>();
-            List<InferenceTaskCatalog> children = new ArrayList<>();
-            for (String type : typeSet) {
-                // 任务类型层
-                for (Map.Entry<String, Map<Integer, InferenceTaskCatalog>> secondMap : firstMap.getValue().entrySet()) {
-                    // 任务类型
-                    String taskType = secondMap.getKey();
-                    if (taskType.equals(type)) {
-                        // 任务层
-                        for (Map.Entry<Integer, InferenceTaskCatalog> thirdMap : secondMap.getValue().entrySet()) {
-                            Integer taskId = thirdMap.getKey();
-                            InferenceTaskCatalog taskCatalog = thirdMap.getValue();
-                            String name = taskCatalog.getLabel();
-                            List<InferenceResult> inferenceResultList = inferenceResultMapper.getInferenceResultByTaskId(taskId);
-                            if (!inferenceResultList.isEmpty()) {
-                                List<InferenceTaskCatalog> results = new ArrayList<>();
-                                // 任务结果层
-                                for (InferenceResult inferenceResult : inferenceResultList) {
-                                    results.add(new InferenceTaskCatalog(
-                                            inferenceResult.getId(), inferenceResult.getName(), true));
+                String[] imageNameList = imageName.split(",");
+                StringBuilder sb = new StringBuilder();
+                List<InferenceTaskCatalog> catalog = new ArrayList<>();
+                List<InferenceTaskCatalog> children = new ArrayList<>();
+                for (String type : typeSet) {
+                    // 任务类型层
+                    for (Map.Entry<String, Map<Integer, InferenceTaskCatalog>> secondMap : firstMap.getValue().entrySet()) {
+                        // 任务类型
+                        String taskType = secondMap.getKey();
+                        if (taskType.equals(type)) {
+                            // 任务层
+                            for (Map.Entry<Integer, InferenceTaskCatalog> thirdMap : secondMap.getValue().entrySet()) {
+                                Integer taskId = thirdMap.getKey();
+                                InferenceTaskCatalog taskCatalog = thirdMap.getValue();
+                                String name = taskCatalog.getLabel();
+                                List<InferenceResult> inferenceResultList = inferenceResultMapper.getInferenceResultByTaskId(taskId);
+                                if (!inferenceResultList.isEmpty()) {
+                                    List<InferenceTaskCatalog> results = new ArrayList<>();
+                                    // 任务结果层
+                                    for (InferenceResult inferenceResult : inferenceResultList) {
+                                        results.add(new InferenceTaskCatalog(
+                                                inferenceResult.getId(), inferenceResult.getName(), true));
+                                    }
+                                    children.add(new InferenceTaskCatalog(taskId, name, taskCatalog.getState(), results));
+                                } else {
+                                    children.add(new InferenceTaskCatalog(taskId, name, taskCatalog.getState()));
                                 }
-                                children.add(new InferenceTaskCatalog(taskId, name, taskCatalog.getState(), results));
-                            }
-                            else {
-                                children.add(new InferenceTaskCatalog(taskId, name, taskCatalog.getState()));
                             }
                         }
                     }
+                    // 同一个类型的任务放在一起
+                    catalog.add(new InferenceTaskCatalog(typeId, type, children));
+                    children = new ArrayList<>();
+                    ++typeId;
                 }
-                // 同一个类型的任务放在一起
-                catalog.add(new InferenceTaskCatalog(typeId, type, children));
-                children = new ArrayList<>();
-                ++typeId;
-            }
-            for (int i = 0; i < Math.min(imageNameList.length, 10); i++) {
-                sb.append(imageNameList[i]);
-                if (i < 9 && imageNameList.length > i + 1) {
-                    // 在每个元素后面添加逗号，除了最后一个元素
-                    sb.append(",");
+                for (int i = 0; i < Math.min(imageNameList.length, 10); i++) {
+                    sb.append(imageNameList[i]);
+                    if (i < 9 && imageNameList.length > i + 1) {
+                        // 在每个元素后面添加逗号，除了最后一个元素
+                        sb.append(",");
+                    }
                 }
+                String path = "myspcoe:" + sb;
+                ans.add(new InferenceTaskCatalog(firstMap.getKey(), String.valueOf(sb), extent, path, catalog));
+                ++imageCount;
             }
-            String path = "myspcoe:" + sb;
-            ans.add(new InferenceTaskCatalog(firstMap.getKey(), String.valueOf(sb), extent, path, catalog));
         }
         return httpResponseUtil.ok("获取所有推理任务", ans);
 
