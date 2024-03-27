@@ -38,6 +38,10 @@ minio:
   endpoint: http://125.220.153.22:9006
   accessKey: rssample
   secretKey: ypfamily608
+## 本地测试环境
+#  endpoint: http://localhost:9000/
+#  accessKey: ybl000301
+#  secretKey: 180072ybl
 
 bos:
   endpoint: https://s3.bj.bcebos.com

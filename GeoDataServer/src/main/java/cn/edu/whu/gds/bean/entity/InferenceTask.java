@@ -18,4 +18,6 @@ public class InferenceTask {
     private Timestamp startTime;
     private Timestamp endTime;
     private String type;
+    private String modelName;
+    private String modelVersion;
 }

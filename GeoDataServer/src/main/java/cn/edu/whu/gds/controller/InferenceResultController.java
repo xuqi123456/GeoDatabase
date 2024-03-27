@@ -18,7 +18,7 @@ public class InferenceResultController {
     private InferenceResultService inferenceResultService;
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
-    public void addInferenceResult(@RequestParam("id") Integer id,
+    public void getInferenceResult(@RequestParam("id") Integer id,
                                    HttpServletResponse response) {
         inferenceResultService.getInferenceResult(id, response);
     }

@@ -96,6 +96,7 @@ public class TiffMetadataServiceImpl implements TiffMetadataService {
 //            }
 //            ++tId;
 //        }
+        // 测试数据
 //        List<TiffCatalog> ans = new ArrayList<>();
 //        List<TiffCatalog> hbc = new ArrayList<>();
 //        for (int i = 0; i < 5; ++i) {
@@ -115,6 +116,7 @@ public class TiffMetadataServiceImpl implements TiffMetadataService {
 //        ans.add(jl);
 //        TiffCatalog sc = new TiffCatalog(3, "四川省", scc);
 //        ans.add(sc);
+        // 写死的返回值
         File file = new File("/home/whu/server/tiff.json");
         JSONArray jsonArray = null;
         try {

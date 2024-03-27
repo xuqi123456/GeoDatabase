@@ -8,14 +8,11 @@ import cn.edu.whu.gds.service.InferenceResultService;
 import cn.edu.whu.gds.util.Bucket;
 import cn.edu.whu.gds.util.HttpResponseUtil;
 import cn.edu.whu.gds.util.MinioUtil;
-import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,10 +29,23 @@ public class InferenceResultServiceImpl implements InferenceResultService {
     private MinioUtil minioUtil;
 
     @Override
-    public void getInferenceResult(Integer id, HttpServletResponse response) {
+    public Response getInferenceResult(Integer id, HttpServletResponse response) {
         InferenceResult inferenceResult = inferenceResultMapper.getInferenceResult(id);
-        minioUtil.download(response, BUCKET,
-                "result/" + inferenceResult.getPath() + inferenceResult.getName() + ".geojson");
+        if (inferenceResult != null && !inferenceResult.getName().isEmpty()) {
+                return httpResponseUtil.ok("返回wms地址", inferenceResult.getName());
+        }else {
+            return httpResponseUtil.ok("无wms地址");
+        }
+
+//        if (inferenceResult != null) {
+//            if (!inferenceResult.getPath().isEmpty()) {
+//                minioUtil.download(response, BUCKET,
+//                        "result/" + inferenceResult.getPath() + inferenceResult.getName() + ".geojson");
+//            } else {
+//                minioUtil.download(response, BUCKET,
+//                        "result/" + inferenceResult.getName() + ".geojson");
+//            }
+//        }
     }
 
     @Override

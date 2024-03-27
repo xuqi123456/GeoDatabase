@@ -21,4 +21,5 @@ public interface TiffRepository extends CrudRepository<TiffMetadata, Long> {
 
     @Query(value = "SELECT concat(p.path, '/', p.name) FROM gd_tiff p WHERE p.id in ?1", nativeQuery = true)
     List<String> getPathsByIds(List<Integer> ids);
+
 }

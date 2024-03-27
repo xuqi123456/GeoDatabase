@@ -16,7 +16,7 @@ public interface InferenceResultMapper {
     @Select("select id, name, task_id, path, create_time from " + Table.INFERENCE_RESULT + " where id = #{id}")
     InferenceResult getInferenceResult(@Param("id") Integer id);
 
-    @Insert("insert into " + Table.INFERENCE_RESULT + " (name, task_id, path, create_time) values (#{name}, #{taskId}, #{taskId}, now())")
+    @Insert("insert into " + Table.INFERENCE_RESULT + " (name, task_id, path, create_time) values (#{name}, #{taskId}, #{path}, now())")
     Boolean addInferenceResult(InferenceResult inferenceResult);
 
     Boolean updateInferenceResult();
