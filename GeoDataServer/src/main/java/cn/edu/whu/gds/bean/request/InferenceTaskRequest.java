@@ -17,6 +17,8 @@ public class InferenceTaskRequest {
     private Short state;
     private String type;
     private JSONObject geom;
+    private String modelName;
+    private String modelVersion;
     private List<Integer> tiffIds;
 
     public InferenceTask getInferenceTask() {
@@ -30,6 +32,12 @@ public class InferenceTaskRequest {
         }
         if (type != null) {
             inferenceTask.setType(type);
+        }
+        if (modelName != null){
+            inferenceTask.setModelName(modelName);
+        }
+        if (modelVersion != null){
+            inferenceTask.setModelName(modelVersion);
         }
         return inferenceTask;
     }

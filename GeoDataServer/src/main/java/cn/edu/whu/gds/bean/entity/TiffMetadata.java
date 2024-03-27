@@ -24,6 +24,14 @@ public class TiffMetadata {
     private String province;
     private String city;
 
+    public TiffMetadata(String name, String path, String bbox, String province, String city) {
+        this.name = name;
+        this.path = path;
+        this.bbox = bbox;
+        this.province = province;
+        this.city = city;
+    }
+
     public String getObjectKey() {
         return path + name;
     }

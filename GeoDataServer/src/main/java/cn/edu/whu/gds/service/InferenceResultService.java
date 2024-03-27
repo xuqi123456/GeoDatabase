@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @Service
 public interface InferenceResultService {
-    void getInferenceResult(Integer id, HttpServletResponse response);
+    Response getInferenceResult(Integer id, HttpServletResponse response);
 
     Response addInferenceResult(InferenceResult inferenceResult) throws IOException;
 
